@@ -13,9 +13,6 @@
  <link rel="stylesheet" href="chat.css">
 </head>
 <body>
-  <input type="text" id="hprompt" placeholder="Enter your prompt">
-  <button onclick="getChatResponse()">Submit</button>
-  <div id="response"></div>
 
 
 <div class="spiritual-particles" id="particles"></div>
@@ -41,11 +38,10 @@
           <div class="dot"></div>
           <div class="dot"></div>
         </div>
-        <div class="chat-input"><input type="text" id="prompt" placeholder="Type your message here...">
-        
-       <button onclick="sendMessage(); getChatResponse();"><i class="fas fa-paper-plane"></i></button>
-
-        
+       <div class="chat-input">
+  <input type="text" id="prompt" placeholder="Type your message here...">
+  <button onclick="sendMessage(); getChatResponse();"><i class="fas fa-paper-plane"></i></button>
+       </div> 
         </div>
       </div>
     </div>
@@ -222,7 +218,7 @@
 
     function selectTopic(topic) {
       const prompt = document.getElementById('prompt');
-      userInput.value = `Tell me about ${topic}`;
+      prompt.value = `Tell me about ${topic}`;
       sendMessage();
     }
 
