@@ -175,7 +175,8 @@
     let currentCharIndex = 0;
     let isDeleting = false;
     let typingSpeed = 100;
-    let apiRes;
+    let apiRes=''; 
+  let prompt='';
     function typeWriter() {
       const welcomeMessage = document.getElementById('welcomeMessage');
       const currentMessage = welcomeMessages[currentMessageIndex];
@@ -217,7 +218,7 @@
     }
 
     function selectTopic(topic) {
-      const prompt = document.getElementById('prompt');
+      const prompt = document.getElementById('userInput');
       prompt.value = `Tell me about ${topic}`;
       sendMessage();
     }
@@ -281,7 +282,7 @@ async function getChatResponse() {
 
         currentSession.push({ role: 'user', content: userInput.value });
 
-        userInput.value = '';
+        userInput.value = 'hare Krishna';
 
         typingIndicator.classList.add('active');
         typingIndicator.style.animation = 'pulse 1s infinite';
