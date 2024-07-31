@@ -1010,7 +1010,9 @@
   }
 
   async function getChatResponse() {
-    const prompt = document.getElementById('prompt').value;
+    const userInput = document.getElementById('userInput');
+    
+    const prompt = document.getElementById('userInput').value;
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
