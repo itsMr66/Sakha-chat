@@ -221,7 +221,7 @@
       const prompt = document.getElementById('userInput');
       prompt.value = `Tell me about ${topic}`;
       sendMessage();
-     
+    
     }
 
     let currentSession = [];
@@ -466,7 +466,7 @@ document.getElementById('userInput').addEventListener('keypress', function(e) {
       historyItem.innerHTML = `
     <div class="history-item-title">${title}</div>
     <div class="history-item-content">${content}</div>
-  `;
+  `; 
       historyPanel.appendChild(historyItem);
     }
 
