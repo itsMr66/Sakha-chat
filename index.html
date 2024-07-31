@@ -1010,9 +1010,8 @@ let currentSession = [];
   }
 
   async function getChatResponse() {
-    const userInput = document.getElementById('userInput');
-    
-    const prompt = document.getElementById('userInput').value;
+    const prompt = document.getElementById('userInput');
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
