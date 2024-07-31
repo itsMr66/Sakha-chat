@@ -13,15 +13,26 @@
   <script>
     async function getChatResponse() {
       const prompt = document.getElementById('prompt').value;
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ prompt: prompt })
-      });
-      const data = await response.json();
-      document.getElementById('response').innerText = data.choices[0].text;
+      const responseDiv = document.getElementById('response');
+      
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt: prompt })
+        });
+        const data = await response.json();
+
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+          responseDiv.innerText = data.choices[0].message.content;
+        } else {
+          responseDiv.innerText = "No valid response received.";
+        }
+      } catch (error) {
+        responseDiv.innerText = `Error: ${error.message}`;
+      }
     }
   </script>
 </body>
