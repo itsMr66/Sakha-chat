@@ -228,8 +228,6 @@
 
 async function getChatResponse() {
   const prompt = document.getElementById('userInput').value;
- const responseDiv = document.getElementById('response');
-   
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
@@ -243,87 +241,96 @@ async function getChatResponse() {
     if (data.choices && data.choices[0] && data.choices[0].message) {
       apiRes = data.choices[0].message.content;
     } else {
-       apiRes = "No valid response received.";
+      apiRes = "No valid response received.";
     }
+
+    // Call displayBotMessage here as soon as the response is received
+    displayBotMessage(apiRes);
+
   } catch (error) {
     apiRes = `Error: ${error.message}`;
+    displayBotMessage(apiRes); // Display error message
   }
 }
 
+function displayBotMessage(botResponse) {
+  const chatMessages = document.getElementById('chatMessages');
+  const typingIndicator = document.getElementById('typingIndicator');
+  
+  typingIndicator.classList.remove('active');
+  typingIndicator.style.animation = '';
 
+  const botMessage = document.createElement('div');
+  botMessage.className = 'message bot-message';
+  chatMessages.appendChild(botMessage);
 
-    function sendMessage() {
-      const userInput = document.getElementById('userInput');
-      const chatMessages = document.getElementById('chatMessages');
-      const chatContainer = document.getElementById('chatContainer');
-      const appContainer = document.getElementById('appContainer');
-      const typingIndicator = document.getElementById('typingIndicator');
-      const topics = document.getElementById('topics');
-      const chatHeaderText = document.getElementById('chatHeaderText');
-      const notificationIcon = document.querySelector('.notification-icon');
-      const historyIcon = document.querySelector('.history-icon');
+  const words = botResponse.split(' ');
+  words.forEach((word, index) => {
+    const span = document.createElement('span');
+    span.className = 'word';
+    span.textContent = word + ' ';
+    span.style.animationDelay = `${index * 0.1}s`;
+    botMessage.appendChild(span);
+  });
 
-      if (userInput.value.trim() !== '') {
-        enterFullscreenMode();
+  const messageActions = document.createElement('div');
+  messageActions.className = 'message-actions';
+  messageActions.innerHTML = `
+    <button class="message-action" onclick="likeMessage(this)"><i class="fas fa-thumbs-up"></i></button>
+    <button class="message-action" onclick="dislikeMessage(this)"><i class="fas fa-thumbs-down"></i></button>
+    <button class="message-action" onclick="copyMessage(this)"><i class="fas fa-copy"></i></button>
+  `;
+  botMessage.appendChild(messageActions);
 
-        document.querySelector('.logo').style.display = 'none';
-        document.querySelector('.welcome-message').style.display = 'none';
-        document.querySelector('.activity-section').style.display = 'none';
-        document.querySelector('.info-section').style.display = 'none';
-        topics.style.display = 'none';
-        notificationIcon.style.display = 'none';
-        historyIcon.style.display = 'flex';
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        chatHeaderText.textContent = 'Sakha';
+  currentSession.push({ role: 'assistant', content: botResponse });
+}
 
-        const userMessage = document.createElement('div');
-        userMessage.className = 'message user-message';
-        userMessage.textContent = userInput.value;
-        chatMessages.appendChild(userMessage);
+function sendMessage() {
+  const userInput = document.getElementById('userInput');
+  const chatMessages = document.getElementById('chatMessages');
+  const chatContainer = document.getElementById('chatContainer');
+  const appContainer = document.getElementById('appContainer');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const topics = document.getElementById('topics');
+  const chatHeaderText = document.getElementById('chatHeaderText');
+  const notificationIcon = document.querySelector('.notification-icon');
+  const historyIcon = document.querySelector('.history-icon');
 
-        currentSession.push({ role: 'user', content: userInput
-         .value });
+  if (userInput.value.trim() !== '') {
+    enterFullscreenMode();
 
-        
+    document.querySelector('.logo').style.display = 'none';
+    document.querySelector('.welcome-message').style.display = 'none';
+    document.querySelector('.activity-section').style.display = 'none';
+    document.querySelector('.info-section').style.display = 'none';
+    topics.style.display = 'none';
+    notificationIcon.style.display = 'none';
+    historyIcon.style.display = 'flex';
 
-        typingIndicator.classList.add('active');
-        typingIndicator.style.animation = 'pulse 1s infinite';
+    chatHeaderText.textContent = 'Sakha';
 
-        setTimeout(() => {
-          typingIndicator.classList.remove('active');
-          typingIndicator.style.animation = '';
+    const userMessage = document.createElement('div');
+    userMessage.className = 'message user-message';
+    userMessage.textContent = userInput.value;
+    chatMessages.appendChild(userMessage);
 
-          const botMessage = document.createElement('div');
-          botMessage.className = 'message bot-message';
-         
-          const botResponse = apiRes;
-          chatMessages.appendChild(botMessage);
+    currentSession.push({ role: 'user', content: userInput.value });
 
-          const words = botResponse.split(' ');
-          words.forEach((word, index) => {
-            const span = document.createElement('span');
-            span.className = 'word';
-            span.textContent = word + ' ';
-            span.style.animationDelay = `${index * 0.1}s`;
-            botMessage.appendChild(span);
-          });
+    typingIndicator.classList.add('active');
+    typingIndicator.style.animation = 'pulse 1s infinite';
 
-          const messageActions = document.createElement('div');
-          messageActions.className = 'message-actions';
-          messageActions.innerHTML = `
-        <button class="message-action" onclick="likeMessage(this)"><i class="fas fa-thumbs-up"></i></button>
-        <button class="message-action" onclick="dislikeMessage(this)"><i class="fas fa-thumbs-down"></i></button>
-        <button class="message-action" onclick="copyMessage(this)"><i class="fas fa-copy"></i></button>
-      `;
-          botMessage.appendChild(messageActions);
+    // Call getChatResponse to get and display the bot's response
+    getChatResponse();
+  }
+}
 
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-
-          currentSession.push({ role: 'assistant', content: botResponse });
-        }, 10);
-      }
-    }
-
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
     function likeMessage(button) {
       button.classList.toggle('active');
       // Add like functionality
