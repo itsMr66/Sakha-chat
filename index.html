@@ -249,7 +249,7 @@ async function getChatResponse() {
 
   } catch (error) {
     apiRes = `Error: ${error.message}`;
-    displayBotMessage(apiRes); // Display error message
+     // Display error message
   }
 }
 
@@ -322,7 +322,7 @@ function sendMessage() {
     typingIndicator.style.animation = 'pulse 1s infinite';
 
     // Call getChatResponse to get and display the bot's response
-    getChatResponse();
+    
   }
 }
 
