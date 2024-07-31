@@ -320,7 +320,7 @@ async function getChatResponse() {
           chatMessages.scrollTop = chatMessages.scrollHeight;
 
           currentSession.push({ role: 'assistant', content: botResponse });
-        }, 2000);
+        }, 10);
       }
     }
 
