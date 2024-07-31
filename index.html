@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+</head>
+<body>
+  <input type="text" id="prompt" placeholder="Enter your prompt">
+  <button onclick="getChatResponse()">Submit</button>
+  <div id="response"></div>
+
+  <script>
+    async function getChatResponse() {
+      const prompt = document.getElementById('prompt').value;
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ prompt: prompt })
+      });
+      const data = await response.json();
+      document.getElementById('response').innerText = data.choices[0].text;
+    }
+  </script>
+</body>
+</html>
