@@ -13,7 +13,7 @@
  <link rel="stylesheet" href="chat.css">
 </head>
 <body>
-  <input type="text" id="prompt" placeholder="Enter your prompt">
+  <input type="text" id="hprompt" placeholder="Enter your prompt">
   <button onclick="getChatResponse()">Submit</button>
   <div id="response"></div>
 
@@ -41,7 +41,7 @@
           <div class="dot"></div>
           <div class="dot"></div>
         </div>
-        <div class="chat-input"><input type="text" id="userInput" placeholder="Type your message here...">
+        <div class="chat-input"><input type="text" id="prompt" placeholder="Type your message here...">
         
        <button onclick="sendMessage(); getChatResponse();"><i class="fas fa-paper-plane"></i></button>
 
@@ -229,7 +229,7 @@
     let currentSession = [];
 
 async function getChatResponse() {
-  const prompt = document.getElementById('userInput');
+  const prompt = document.getElementById('prompt').value;
  const responseDiv = document.getElementById('response');
    
   try {
