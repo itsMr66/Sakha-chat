@@ -4,11 +4,168 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chatbot</title>
+ <link rel="stylesheet" href="chat.css">
 </head>
 <body>
   <input type="text" id="prompt" placeholder="Enter your prompt">
   <button onclick="getChatResponse()">Submit</button>
   <div id="response"></div>
+
+
+<div class="spiritual-particles" id="particles"></div>
+  <div class="container" id="appContainer">
+    <div class="logo"><img src="https://www.sakha.chat/logo.png" alt="Sakha Logo"></div>
+    <div class="welcome-message" id="welcomeMessage"></div>
+    <div class="chat-container" id="chatContainer">
+      <div class="chat-header"><button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i></button><span id="chatHeaderText">Hare Krishna Nilesh</span></div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">Namaste! I'm Sakha, your spiritual friend. How can I guide you today?<div class="message-actions"><button class="message-action" onclick="likeMessage(this)"><i class="fas fa-thumbs-up"></i></button><button class="message-action" onclick="dislikeMessage(this)"><i class="fas fa-thumbs-down"></i></button><button class="message-action" onclick="copyMessage(this)"><i class="fas fa-copy"></i></button></div>
+        </div>
+      </div>
+      <div class="topics" id="topics">
+        <div class="topic-bullet" onclick="selectTopic('Anxiety')">Anxiety</div>
+        <div class="topic-bullet" onclick="selectTopic('Depression')">Depression</div>
+        <div class="topic-bullet" onclick="selectTopic('Mindfulness')">Mindfulness</div>
+        <div class="topic-bullet" onclick="selectTopic('Spirituality')">Spirituality</div>
+        <div class="topic-bullet" onclick="selectTopic('Meditation')">Meditation</div>
+      </div>
+      <div class="chat-input-container">
+        <div class="typing-indicator" id="typingIndicator">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="chat-input"><input type="text" id="userInput" placeholder="Type your message here...">
+        
+       <button onclick="sendMessage(); getChatResponse();"><i class="fas fa-paper-plane"></i></button>
+
+        
+        </div>
+      </div>
+    </div>
+    <div class="activity-section">
+      <h2>Your Spiritual Journey</h2>
+      <div class="activity-cards">
+        <div class="activity-card" id="chantingCard">
+          <div class="activity-info">
+            <div class="activity-title"><i class="fas fa-om"></i>Chanting</div><button class="activity-button" onclick="completeActivity('chanting')">Complete Chanting</button>
+          </div>
+          <div class="progress-circle" data-progress="0"></div>
+        </div>
+        <div class="activity-card" id="readingCard">
+          <div class="activity-info">
+            <div class="activity-title"><i class="fas fa-book"></i>Reading</div><button class="activity-button" onclick="completeActivity('reading')">Complete Reading</button>
+          </div>
+          <div class="progress-circle" data-progress="0"></div>
+        </div>
+        <div class="activity-card" id="gameStreakCard">
+          <div class="activity-info">
+            <div class="activity-title"><i class="fas fa-gamepad"></i>Game Streak</div><button class="activity-button" onclick="completeActivity('gameStreak')">Complete Game</button>
+          </div>
+          <div class="progress-circle" data-progress="0"></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-section">
+      <h2>Spiritual Insights</h2>
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="info-title"><i class="fas fa-bullhorn"></i> Announcements</div>
+          <div class="info-content">Join us for a special meditation session this Sunday at 10 AM IST.</div>
+        </div>
+        <div class="info-card">
+          <div class="info-title"><i class="fas fa-book-open"></i> Shloka of the Day</div>
+          <div class="info-content">"Yogaḥ karmasu kauśalam" - Yoga is skill in action. (Bhagavad Gita 2.50)</div>
+        </div>
+        <div class="info-card" style="margin-bottom: 10vh;">
+          <div class="info-title"><i class="fas fa-newspaper"></i> Spiritual News</div>
+          <div class="info-content">New study shows regular meditation can significantly reduce stress levels.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="navigation">
+      <a href="#" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span>
+      </a>
+    <a href="#" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://sakha-five.vercel.app/mala.html" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a>
+  <a href="#" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span>
+  </a>
+  <a href="#" class="nav-item"><i class="fas fa-gamepad"></i><span>Game</span></a></nav>
+  <div class="notification-icon" onclick="toggleNotifications()" data-count="3"><i class="fas fa-bell"></i></div>
+  <div class="notification-panel" id="notificationPanel">
+    <div class="notification-panel-header">
+      <h2 class="notification-panel-title">Notifications</h2><button class="close-notification-panel" onclick="toggleNotifications()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="notification-item">
+      <div class="notification-item-title">New Meditation Technique</div>
+      <div class="notification-item-content">Explore our latest guided meditation for inner peace.</div>
+    </div>
+    <div class="notification-item">
+      <div class="notification-item-title">Chanting Milestone</div>
+      <div class="notification-item-content">Your friend Radha has completed a 7-day chanting streak!</div>
+    </div>
+    <div class="notification-item">
+      <div class="notification-item-title">New Spiritual Article</div>
+      <div class="notification-item-content">"Finding Peace in Chaos" - Read our latest blog post.</div>
+    </div>
+  </div>
+  <div class="history-icon" onclick="toggleHistory()"><i class="fas fa-history"></i></div>
+  <div class="history-panel" id="historyPanel">
+    <style>
+      @keyframes slideIn {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideOut {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+
+        to {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+      }
+
+      .history-panel {
+        animation: slideIn 0.5s ease-out;
+        transform-origin: right center;
+      }
+
+      .history-panel.closing {
+        animation: slideIn 0.5s ease-out;
+        transform-origin: right center;
+      }
+    </style>
+    <div class="history-panel-header">
+      <h2 class="history-panel-title">Conversation History</h2><button class="close-history-panel" onclick="toggleHistory()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="history-item">
+      <div class="history-item-title">Meditation Techniques</div>
+      <div class="history-item-content">Discussion about various meditation techniques and their benefits.</div>
+    </div>
+    <div class="history-item">
+      <div class="history-item-title">Understanding Karma</div>
+      <div class="history-item-content">Exploring the concept of karma and its impact on our lives.</div>
+    </div>
+    <div class="history-item">
+      <div class="history-item-title">Bhagavad Gita Insights</div>
+      <div class="history-item-content">Key teachings from the Bhagavad Gita and their modern applications.</div>
+    </div>
+  </div>
+  <div class="chanting-overlay" id="chantingOverlay">
+    <h1>Hare Krishna</h1><button class="close-overlay" onclick="closeChantingOverlay()"><i class="fas fa-times"></i></button>
+         </div>
+ 
 
   <script>
     async function getChatResponse() {
