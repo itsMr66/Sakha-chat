@@ -225,9 +225,7 @@
     }
 
     let currentSession = [];
-
-async function getChatResponse() {
-  const prompt = document.getElementById('userInput').value;
+async function getChatResponse(prompt) {
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
@@ -249,7 +247,7 @@ async function getChatResponse() {
 
   } catch (error) {
     apiRes = `Error: ${error.message}`;
-     // Display error message
+    displayBotMessage(apiRes); // Display error message
   }
 }
 
@@ -299,6 +297,8 @@ function sendMessage() {
   const historyIcon = document.querySelector('.history-icon');
 
   if (userInput.value.trim() !== '') {
+    const prompt = userInput.value; // Store the prompt before clearing the input
+
     enterFullscreenMode();
 
     document.querySelector('.logo').style.display = 'none';
@@ -313,26 +313,28 @@ function sendMessage() {
 
     const userMessage = document.createElement('div');
     userMessage.className = 'message user-message';
-    userMessage.textContent = userInput.value;
+    userMessage.textContent = prompt; // Use the stored prompt value
     chatMessages.appendChild(userMessage);
 
-    currentSession.push({ role: 'user', content: userInput.value });
+    currentSession.push({ role: 'user', content: prompt });
 
     typingIndicator.classList.add('active');
     typingIndicator.style.animation = 'pulse 1s infinite';
 
-    // Call getChatResponse to get and display the bot's response
+    // Clear the input field
     userInput.value = '';
+
+    // Call getChatResponse to get and display the bot's response
+    
   }
 }
 
 document.getElementById('userInput').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') {
     sendMessage();
-   
   }
 });
-    function likeMessage(button) {
+   function likeMessage(button) {
       button.classList.toggle('active');
       // Add like functionality
     }
