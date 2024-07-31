@@ -5,7 +5,7 @@
   <base href="https://sakha.ai">
   <title>Sakha - Your Spiritual Friend</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="/chat.css">
+  <link rel="stylesheet" href="./chat.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -167,59 +167,6 @@
     <h1>Hare Krishna</h1><button class="close-overlay" onclick="closeChantingOverlay()"><i class="fas fa-times"></i></button>
   </div>
 <script>
-  const welcomeMessages = ["Find your inner peace", "Discover spiritual wisdom", "Embrace mindful living", "Navigate life's journey", "Cultivate inner harmony"];
-  let currentMessageIndex = 0;
-  let currentCharIndex = 0;
-  let isDeleting = false;
-  let typingSpeed = 100;
-let currentSession = [];
-  let apiRes = ''; // Global variable to hold the response
-
-  function typeWriter() {
-    const welcomeMessage = document.getElementById('welcomeMessage');
-    const currentMessage = welcomeMessages[currentMessageIndex];
-    if (isDeleting) {
-      welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex - 1);
-      currentCharIndex--;
-    } else {
-      welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex + 1);
-      currentCharIndex++;
-    }
-    if (!isDeleting && currentCharIndex === currentMessage.length) {
-      isDeleting = true;
-      typingSpeed = 100;
-      setTimeout(() => {
-        isDeleting = false;
-        currentMessageIndex = (currentMessageIndex + 1) % welcomeMessages.length;
-        typingSpeed = 0;
-      }, 2000);
-    } else if (isDeleting && currentCharIndex === 0) {
-      isDeleting = false;
-    }
-    const randomSpeed = Math.random() * 50 + 50;
-    setTimeout(typeWriter, isDeleting ? typingSpeed : randomSpeed);
-  }
-
-  function createParticles() {
-    const particlesContainer = document.getElementById('particles');
-    const particleCount = 20;
-    for (let i = 0; i < particleCount; i++) {
-      const particle = document.createElement('div');
-      particle.classList.add('particle');
-      particle.style.width = `${Math.random() * 10 + 5}px`;
-      particle.style.height = particle.style.width;
-      particle.style.left = `${Math.random() * 100}%`;
-      particle.style.top = `${Math.random() * 100}%`;
-      particle.style.animationDelay = `${Math.random() * 5}s`;
-      particlesContainer.appendChild(particle);
-    }
-  }
-
-  function selectTopic(topic) {
-    const userInput = document.getElementById('userInput');
-    userInput.value = `Tell me about ${topic}`;
-    sendMessage();
-  }
   async function getChatRespose() {
       const prompt = document.getElementById('prompt').value;
       const responseDiv = document.getElementById('response');
