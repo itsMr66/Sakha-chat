@@ -221,6 +221,7 @@
       const prompt = document.getElementById('userInput');
       prompt.value = `Tell me about ${topic}`;
       sendMessage();
+     getChatResponse();
     }
 
     let currentSession = [];
@@ -280,7 +281,8 @@ async function getChatResponse() {
         userMessage.textContent = userInput.value;
         chatMessages.appendChild(userMessage);
 
-        currentSession.push({ role: 'user', content: userInput.value });
+        currentSession.push({ role: 'user', content: userInput
+         .value });
 
         
 
