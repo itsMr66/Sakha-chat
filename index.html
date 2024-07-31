@@ -4,7 +4,7 @@
   <base href="https://sakha.ai">
   <title>Sakha - Your Spiritual Friend</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="chat.css">
+  <link rel="stylesheet" href="/chat.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -216,29 +216,29 @@ let currentSession = [];
     userInput.value = `Tell me about ${topic}`;
     sendMessage();
   }
+async function getChatResponse() {
+      const prompt = document.getElementById('userInput').value;
+      const responseDiv = document.getElementById('response');
+      
+      try {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt: prompt })
+        });
+        const data = await response.json();
 
-  async function getChatResponse() {
-  const prompt = document.getElementById('userInput').value;
-
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ prompt })
-    });
-    const data = await response.json();
-    if (data.choices && data.choices[0] && data.choices[0].message) {
-      apiRes = data.choices[0].message.content;
-    } else {
-      apiRes = "No valid response received.";
+        if (data.choices && data.choices[0] && data.choices[0].message) {
+          responseDiv.innerText = data.choices[0].message.content;
+        } else {
+          responseDiv.innerText = "No valid response received.";
+        }
+      } catch (error) {
+        responseDiv.innerText = `Error: ${error.message}`;
+      }
     }
-  } catch (error) {
-    apiRes = `Error: ${error.message}`;
-  }
-}
-
 function sendMessage() {
   const userInput = document.getElementById('userInput');
   const chatMessages = document.getElementById('chatMessages');
