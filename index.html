@@ -170,6 +170,7 @@
  
 
   <script>// Constants for message limiting
+// Constants for message limiting
 const MAX_MESSAGES = 5;
 const COOLDOWN_PERIOD = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
 
@@ -504,26 +505,38 @@ function addToHistory(title, content) {
   historyPanel.appendChild(historyItem);
 }
 
+// Handle send button click
+function handleSendButtonClick() {
+  sendMessage();
+}
+
 // Event listeners
-document.getElementById('userInput').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
-});
+document.addEventListener('DOMContentLoaded', function() {
+  const userInput = document.getElementById('userInput');
+  const sendButton = document.querySelector('.chat-input button');
 
-window.addEventListener('scroll', () => {
-  const particles = document.querySelectorAll('.particle');
-  const scrollPosition = window.pageYOffset;
-  particles.forEach((particle, index) => {
-    const speed = 0.5 + (index / particles.length) * 0.5;
-    particle.style.transform = `translateY(${scrollPosition * speed}px)`;
+  userInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
   });
-});
 
-// Initialization
-typeWriter();
-createParticles();
-resetMessagesIfNeeded();
+  sendButton.addEventListener('click', handleSendButtonClick);
+
+  window.addEventListener('scroll', () => {
+    const particles = document.querySelectorAll('.particle');
+    const scrollPosition = window.pageYOffset;
+    particles.forEach((particle, index) => {
+      const speed = 0.5 + (index / particles.length) * 0.5;
+      particle.style.transform = `translateY(${scrollPosition * speed}px)`;
+    });
+  });
+
+  // Initialization
+  typeWriter();
+  createParticles();
+  resetMessagesIfNeeded();
+});
   </script>
 </body>
 </html>
