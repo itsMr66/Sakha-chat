@@ -281,48 +281,81 @@ function displayBotMessage(botResponse) {
   currentSession.push({ role: 'assistant', content: botResponse });
 }
 
-function sendMessage() {
-  const userInput = document.getElementById('userInput');
-  const chatMessages = document.getElementById('chatMessages');
-  const chatContainer = document.getElementById('chatContainer');
-  const appContainer = document.getElementById('appContainer');
-  const typingIndicator = document.getElementById('typingIndicator');
-  const topics = document.getElementById('topics');
-  const chatHeaderText = document.getElementById('chatHeaderText');
-  const notificationIcon = document.querySelector('.notification-icon');
-  const historyIcon = document.querySelector('.history-icon');
+function isLocalStorageAvailable() {
+  try {
+    const testKey = 'test';
+    localStorage.setItem(testKey, testKey);
+    localStorage.removeItem(testKey);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+let storage = {
+  questionCount: 0,
+  lastQuestionTime: 0,
+};
+
+if (isLocalStorageAvailable()) {
+  storage = {
+    get questionCount() {
+      return parseInt(localStorage.getItem('questionCount')) || 0;
+    },
+    set questionCount(value) {
+      localStorage.setItem('questionCount', value);
+    },
+    get lastQuestionTime() {
+      return parseInt(localStorage.getItem('lastQuestionTime')) || 0;
+    },
+    set lastQuestionTime(value) {
+      localStorage.setItem('lastQuestionTime', value);
+    },
+  };
+}
+
 function getCurrentTime() {
   return new Date().getTime();
 }
 
-// Function to update local storage with the current question count and timestamp
-function updateLocalStorage(questionCount, timestamp) {
-  localStorage.setItem('questionCount', questionCount);
-  localStorage.setItem('lastQuestionTime', timestamp);
+function updateStorage(questionCount, timestamp) {
+  storage.questionCount = questionCount;
+  storage.lastQuestionTime = timestamp;
 }
 
-// Retrieve question count and last question time from local storage
-let questionCount = parseInt(localStorage.getItem('questionCount')) || 0;
-let lastQuestionTime = parseInt(localStorage.getItem('lastQuestionTime')) || 0;
+function checkQuestionLimit() {
+  const currentTime = getCurrentTime();
 
-const currentTime = getCurrentTime();
+  if (currentTime - storage.lastQuestionTime > 3 * 60 * 60 * 1000) {
+    storage.questionCount = 0;
+  }
 
-// Check if 3 hours have passed since the last question
-if (currentTime - lastQuestionTime > 3 * 60 * 60 * 1000) {
-  questionCount = 0;
+  if (storage.questionCount >= 5) {
+    return true;
+  }
+
+  storage.questionCount += 1;
+  storage.lastQuestionTime = currentTime;
+  return false;
 }
 
-if (questionCount >= 5) {
-  const limitMessage = document.createElement('div');
-  limitMessage.className = 'message bot-message';
-  limitMessage.textContent = "You've reached your usage limit for Sakha Chat. For the time being, it's restricted to 5 messages per day. We are working on increasing this limit. Please check back 3hrs later for additional access. Hare Krishna.";
-  chatMessages.appendChild(limitMessage);
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-  return;
-}
+function sendMessage() {
+  const userInput = document.getElementById('userInput');
+  const chatMessages = document.getElementById('chatMessages');
+  const chatHeaderText = document.getElementById('chatHeaderText');
+  const typingIndicator = document.getElementById('typingIndicator');
+  const topics = document.getElementById('topics');
+  const notificationIcon = document.querySelector('.notification-icon');
+  const historyIcon = document.querySelector('.history-icon');
 
-
-
+  if (checkQuestionLimit()) {
+    const limitMessage = document.createElement('div');
+    limitMessage.className = 'message bot-message';
+    limitMessage.textContent = "You've reached your usage limit for Sakha Chat. For the time being, it's restricted to 5 messages per day. We are working on increasing this limit. Please check back 3hrs later for additional access. Hare Krishna.";
+    chatMessages.appendChild(limitMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return;
+  }
 
   if (userInput.value.trim() !== '') {
     const prompt = userInput.value; // Store the prompt before clearing the input
@@ -362,101 +395,11 @@ document.getElementById('userInput').addEventListener('keypress', function(e) {
     sendMessage();
   }
 });
-   function likeMessage(button) {
-      button.classList.toggle('active');
-      // Add like functionality
-    }
-
-    function dislikeMessage(button) {
-      button.classList.toggle('active');
-      // Add dislike functionality
-    }
-
-    function copyMessage(button) {
-      const message = button.closest('.message').textContent;
-      navigator.clipboard.writeText(message).then(() => {
-        // Show a tooltip or notification that the message was copied
-      });
-    }
-
-    function completeActivity(activity) {
-      if (activity === 'chanting') {
-        openChantingOverlay();
-      }
-      const card = document.getElementById(`${activity}Card`);
-      const progressCircle = card.querySelector('.progress-circle');
-      let progress = parseInt(progressCircle.getAttribute('data-progress'));
-      progress += 10;
-      if (progress > 100) progress = 100;
-      progressCircle.setAttribute('data-progress', progress);
-      progressCircle.style.background = `conic-gradient(var(--primary-color) ${progress * 3.6}deg, #ededed 0deg)`;
-
-      card.style.animation = 'pulse 0.5s';
-      setTimeout(() => {
-        card.style.animation = '';
-      }, 500);
-    }
-
-    function openChantingOverlay() {
-      const overlay = document.getElementById('chantingOverlay');
-      overlay.style.display = 'flex';
-    }
-
-    function closeChantingOverlay() {
-      const overlay = document.getElementById('chantingOverlay');
-      overlay.style.display = 'none';
-    }
-
-    function goBack() {
-      const chatContainer = document.getElementById('chatContainer');
-      const logo = document.querySelector('.logo');
-      const welcomeMessage = document.querySelector('.welcome-message');
-      const activitySection = document.querySelector('.activity-section');
-      const infoSection = document.querySelector('.info-section');
-      const topics = document.getElementById('topics');
-      const chatHeaderText = document.getElementById('chatHeaderText');
-      const notificationIcon = document.querySelector('.notification-icon');
-      const historyIcon = document.querySelector('.history-icon');
-
-      chatContainer.classList.remove('fullscreen');
-      logo.style.display = 'block';
-      welcomeMessage.style.display = 'block';
-      activitySection.style.display = 'block';
-      infoSection.style.display = 'block';
-      topics.style.display = 'flex';
-      document.querySelector('.navigation').style.display = 'flex';
-      chatHeaderText.text = 'Hare Krishna Nilesh';
-      notificationIcon.style.display = 'flex';
-      historyIcon.style.display = 'none';
-    }
-
     function enterFullscreenMode() {
       const chatContainer = document.getElementById('chatContainer');
-      chatContainer.classList.add('fullscreen');
+chatContainer.classList.add('fullscreen');
       updateNavigationVisibility();
     }
-
-    function toggleNotifications() {
-      const panel = document.getElementById('notificationPanel');
-      panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
-    }
-
-    function toggleHistory() {
-      const panel = document.getElementById('historyPanel');
-      panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
-    }
-
-    typeWriter();
-    createParticles();
-
-    document.getElementById('userInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
-    });
-
-    
-
     window.addEventListener('scroll', () => {
       const particles = document.querySelectorAll('.particle');
       const scrollPosition = window.pageYOffset;
@@ -510,4 +453,4 @@ document.getElementById('userInput').addEventListener('keypress', function(e) {
 
 
 
-
+                                                                                 
