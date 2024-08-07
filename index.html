@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -292,8 +292,39 @@ function sendMessage() {
   const notificationIcon = document.querySelector('.notification-icon');
   const historyIcon = document.querySelector('.history-icon');
 
+  // Function to get the current UTC time
+  function getCurrentTime() {
+    return new Date().getTime();
+  }
+
+  // Function to update local storage with the current question count and timestamp
+  function updateLocalStorage(questionCount, timestamp) {
+    localStorage.setItem('questionCount', questionCount);
+    localStorage.setItem('lastQuestionTime', timestamp);
+  }
+
+  // Retrieve question count and last question time from local storage
+  let questionCount = parseInt(localStorage.getItem('questionCount')) || 0;
+  let lastQuestionTime = parseInt(localStorage.getItem('lastQuestionTime')) || 0;
+
+  const currentTime = getCurrentTime();
+
+  // Check if 3 hours have passed since the last question
+  if (currentTime - lastQuestionTime > 3 * 60 * 60 * 1000) {
+    questionCount = 0;
+  }
+
+  if (questionCount >= 5) {
+    const limitMessage = document.createElement('div');
+    limitMessage.className = 'message bot-message';
+    limitMessage.textContent = "You've reached your usage limit for Sakha Chat. For the time being, it's restricted to 5 messages per day. We are working on increasing this limit. Please check back 3hrs later for additional access. Hare Krishna.";
+    chatMessages.appendChild(limitMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return;
+  }
+
   if (userInput.value.trim() !== '') {
-    const prompt = userInput.value; // Store the prompt before clearing the input
+    const prompt = userInput.value;
 
     enterFullscreenMode();
 
@@ -309,7 +340,7 @@ function sendMessage() {
 
     const userMessage = document.createElement('div');
     userMessage.className = 'message user-message';
-    userMessage.textContent = prompt; // Use the stored prompt value
+    userMessage.textContent = prompt;
     chatMessages.appendChild(userMessage);
 
     currentSession.push({ role: 'user', content: prompt });
@@ -322,8 +353,18 @@ function sendMessage() {
 
     // Call getChatResponse to get and display the bot's response
     getChatResponse(prompt);
+
+    // Update the question count and last question time
+    questionCount++;
+    updateLocalStorage(questionCount, currentTime);
   }
 }
+
+// Reassign the original sendMessage function to ensure it scrolls chat to the bottom
+
+
+
+
 
 document.getElementById('userInput').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') {
@@ -393,7 +434,7 @@ document.getElementById('userInput').addEventListener('keypress', function(e) {
       infoSection.style.display = 'block';
       topics.style.display = 'flex';
       document.querySelector('.navigation').style.display = 'flex';
-      chatHeaderText.text = 'Hare Krishna Nilesh';
+      chatHeaderText.text = 'Hare Krishna Devotes';
       notificationIcon.style.display = 'flex';
       historyIcon.style.display = 'none';
     }
@@ -472,4 +513,3 @@ document.getElementById('userInput').addEventListener('keypress', function(e) {
 
 
 
-   
