@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -20,7 +20,7 @@
     <div class="logo"><img src="https://www.sakha.chat/logo.png" alt="Sakha Logo"></div>
     <div class="welcome-message" id="welcomeMessage"></div>
     <div class="chat-container" id="chatContainer">
-      <div class="chat-header"><button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i></button><span id="chatHeaderText">Hare Krishna Devotes</span></div>
+      <div class="chat-header"><button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i></button><span id="chatHeaderText">Hare Krishna Devotee</span></div>
       <div class="chat-messages" id="chatMessages">
         <div class="message bot-message">Namaste! I'm Sakha, your spiritual friend. How can I guide you today?<div class="message-actions"><button class="message-action" onclick="likeMessage(this)"><i class="fas fa-thumbs-up"></i></button><button class="message-action" onclick="dislikeMessage(this)"><i class="fas fa-thumbs-down"></i></button><button class="message-action" onclick="copyMessage(this)"><i class="fas fa-copy"></i></button></div>
         </div>
@@ -85,10 +85,14 @@
         </div>
       </div>
     </div>
-  </div><nav class="navigation"><a href="https://home.sakha.chat" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span></a><a href="https://vedic.sakha.chat" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://home.sakha.chat/mala" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a><a href="https://gita.sakha.chat" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span></a>
-  <a href="https://game.sakha.chat" class="nav-item"><i class="fas fa-gamepad"></i><span>Game</span></a>
-  </nav>
-  
+  </div>
+  <nav class="navigation">
+      <a href="#" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span>
+      </a>
+    <a href="https://vedic.sakha.chat" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://home.sakha.chat/mala.html" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a>
+  <a href="https://gita.sakha.chat" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span>
+  </a>
+  <a href="https://game.sakha.chat" class="nav-item"><i class="fas fa-gamepad"></i><span>Game</span></a></nav>
   <div class="notification-icon" onclick="toggleNotifications()" data-count="3"><i class="fas fa-bell"></i></div>
   <div class="notification-panel" id="notificationPanel">
     <div class="notification-panel-header">
@@ -165,15 +169,60 @@
          </div>
  
 
-  <script>
-    const welcomeMessages = ["Find your inner peace", "Discover spiritual wisdom", "Embrace mindful living", "Navigate life's journey", "Cultivate inner harmony"];
+  <script>// Constants for message limiting
+const MAX_MESSAGES = 5;
+const COOLDOWN_PERIOD = 3 * 60 * 60 * 1000; // 3 hours in milliseconds
+
+// Utility functions for message limiting
+function getCurrentTime() {
+  return new Date().getTime();
+}
+
+function getStoredData() {
+  const storedData = localStorage.getItem('chatData');
+  return storedData ? JSON.parse(storedData) : { messages: [], lastResetTime: getCurrentTime() };
+}
+
+function storeData(data) {
+  localStorage.setItem('chatData', JSON.stringify(data));
+}
+
+function resetMessagesIfNeeded() {
+  const data = getStoredData();
+  const currentTime = getCurrentTime();
+  if (currentTime - data.lastResetTime >= COOLDOWN_PERIOD) {
+    data.messages = [];
+    data.lastResetTime = currentTime;
+    storeData(data);
+  }
+}
+
+function canSendMessage() {
+  resetMessagesIfNeeded();
+  const data = getStoredData();
+  return data.messages.length < MAX_MESSAGES;
+}
+
+function addMessage() {
+  const data = getStoredData();
+  data.messages.push(getCurrentTime());
+  storeData(data);
+}
+
+function getRemainingTime() {
+  const data = getStoredData();
+  const currentTime = getCurrentTime();
+  const timeSinceLastReset = currentTime - data.lastResetTime;
+  const remainingTime = COOLDOWN_PERIOD - timeSinceLastReset;
+  return Math.max(0, remainingTime);
+}
+
+// Welcome message typing effect
+const welcomeMessages = ["Find your inner peace", "Discover spiritual wisdom", "Embrace mindful living", "Navigate life's journey", "Cultivate inner harmony"];
 let currentMessageIndex = 0;
 let currentCharIndex = 0;
 let isDeleting = false;
 let typingSpeed = 100;
-let apiRes = '';
-let prompt = '';
-let currentSession = [];
 
 function typeWriter() {
   const welcomeMessage = document.getElementById('welcomeMessage');
@@ -200,6 +249,7 @@ function typeWriter() {
   setTimeout(typeWriter, isDeleting ? typingSpeed : randomSpeed);
 }
 
+// Create particles for background effect
 function createParticles() {
   const particlesContainer = document.getElementById('particles');
   const particleCount = 20;
@@ -215,11 +265,16 @@ function createParticles() {
   }
 }
 
+// Topic selection
 function selectTopic(topic) {
   const prompt = document.getElementById('userInput');
   prompt.value = `Tell me about ${topic}`;
   sendMessage();
 }
+
+// Chat functionality
+let currentSession = [];
+let apiRes = '';
 
 async function getChatResponse(prompt) {
   try {
@@ -242,14 +297,14 @@ async function getChatResponse(prompt) {
 
   } catch (error) {
     apiRes = `Error: ${error.message}`;
-    displayBotMessage(apiRes); // Display error message
+    displayBotMessage(apiRes);
   }
 }
 
 function displayBotMessage(botResponse) {
   const chatMessages = document.getElementById('chatMessages');
   const typingIndicator = document.getElementById('typingIndicator');
-
+  
   typingIndicator.classList.remove('active');
   typingIndicator.style.animation = '';
 
@@ -280,89 +335,64 @@ function displayBotMessage(botResponse) {
   currentSession.push({ role: 'assistant', content: botResponse });
 }
 
+function displayLimitMessage() {
+  const remainingTime = getRemainingTime();
+  const hours = Math.floor(remainingTime / (60 * 60 * 1000));
+  const minutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+  
+  const message = `You've reached your usage limit for Sakha Chat. For the time being, it's restricted to 5 messages per 3 hours. We are working on increasing this limit. Please check back in ${hours} hours and ${minutes} minutes for additional access. Hare Krishna.`;
+  
+  displayBotMessage(message);
+}
+
 function sendMessage() {
   const userInput = document.getElementById('userInput');
   const chatMessages = document.getElementById('chatMessages');
+  const chatContainer = document.getElementById('chatContainer');
+  const appContainer = document.getElementById('appContainer');
   const typingIndicator = document.getElementById('typingIndicator');
   const topics = document.getElementById('topics');
   const chatHeaderText = document.getElementById('chatHeaderText');
   const notificationIcon = document.querySelector('.notification-icon');
   const historyIcon = document.querySelector('.history-icon');
 
-  // Function to get the current UTC time
-  function getCurrentTime() {
-    return new Date().getTime();
-  }
-
-  // Function to update local storage with the current question count and timestamp
-  function updateLocalStorage(questionCount, timestamp) {
-    localStorage.setItem('questionCount', questionCount);
-    localStorage.setItem('lastQuestionTime', timestamp);
-  }
-
-  // Retrieve question count and last question time from local storage
-  let questionCount = parseInt(localStorage.getItem('questionCount')) || 0;
-  let lastQuestionTime = parseInt(localStorage.getItem('lastQuestionTime')) || 0;
-
-  const currentTime = getCurrentTime();
-
-  // Check if 3 hours have passed since the last question
-  if (currentTime - lastQuestionTime > 3 * 60 * 60 * 1000) {
-    questionCount = 0;
-  }
-
-  if (questionCount >= 5) {
-    const limitMessage = document.createElement('div');
-    limitMessage.className = 'message bot-message';
-    limitMessage.textContent = "You've reached your usage limit for Sakha Chat. For the time being, it's restricted to 5 messages per day. We are working on increasing this limit. Please check back 3hrs later for additional access. Hare Krishna.";
-    chatMessages.appendChild(limitMessage);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    return;
-  }
-
   if (userInput.value.trim() !== '') {
-    const prompt = userInput.value;
+    if (canSendMessage()) {
+      addMessage();
+      const prompt = userInput.value;
 
-    enterFullscreenMode();
+      enterFullscreenMode();
 
-    document.querySelector('.logo').style.display = 'none';
-    document.querySelector('.welcome-message').style.display = 'none';
-    document.querySelector('.activity-section').style.display = 'none';
-    document.querySelector('.info-section').style.display = 'none';
-    topics.style.display = 'none';
-    notificationIcon.style.display = 'none';
-    historyIcon.style.display = 'flex';
+      document.querySelector('.logo').style.display = 'none';
+      document.querySelector('.welcome-message').style.display = 'none';
+      document.querySelector('.activity-section').style.display = 'none';
+      document.querySelector('.info-section').style.display = 'none';
+      topics.style.display = 'none';
+      notificationIcon.style.display = 'none';
+      historyIcon.style.display = 'flex';
 
-    chatHeaderText.textContent = 'Sakha';
+      chatHeaderText.textContent = 'Sakha';
 
-    const userMessage = document.createElement('div');
-    userMessage.className = 'message user-message';
-    userMessage.textContent = prompt;
-    chatMessages.appendChild(userMessage);
+      const userMessage = document.createElement('div');
+      userMessage.className = 'message user-message';
+      userMessage.textContent = prompt;
+      chatMessages.appendChild(userMessage);
 
-    currentSession.push({ role: 'user', content: prompt });
+      currentSession.push({ role: 'user', content: prompt });
 
-    typingIndicator.classList.add('active');
-    typingIndicator.style.animation = 'pulse 1s infinite';
+      typingIndicator.classList.add('active');
+      typingIndicator.style.animation = 'pulse 1s infinite';
 
-    // Clear the input field
-    userInput.value = '';
+      userInput.value = '';
 
-    // Call getChatResponse to get and display the bot's response
-    getChatResponse(prompt);
-
-    // Update the question count and last question time
-    questionCount++;
-    updateLocalStorage(questionCount, currentTime);
+      getChatResponse(prompt);
+    } else {
+      displayLimitMessage();
+    }
   }
 }
 
-document.getElementById('userInput').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
-});
-
+// Message actions
 function likeMessage(button) {
   button.classList.toggle('active');
   // Add like functionality
@@ -380,6 +410,7 @@ function copyMessage(button) {
   });
 }
 
+// Activity completion
 function completeActivity(activity) {
   if (activity === 'chanting') {
     openChantingOverlay();
@@ -398,6 +429,7 @@ function completeActivity(activity) {
   }, 500);
 }
 
+// Chanting overlay
 function openChantingOverlay() {
   const overlay = document.getElementById('chantingOverlay');
   overlay.style.display = 'flex';
@@ -408,6 +440,7 @@ function closeChantingOverlay() {
   overlay.style.display = 'none';
 }
 
+// Navigation and UI
 function goBack() {
   const chatContainer = document.getElementById('chatContainer');
   const logo = document.querySelector('.logo');
@@ -415,25 +448,44 @@ function goBack() {
   const activitySection = document.querySelector('.activity-section');
   const infoSection = document.querySelector('.info-section');
   const topics = document.getElementById('topics');
+  const chatHeaderText = document.getElementById('chatHeaderText');
   const notificationIcon = document.querySelector('.notification-icon');
   const historyIcon = document.querySelector('.history-icon');
-  const chatHeaderText = document.getElementById('chatHeaderText');
 
   chatContainer.classList.remove('fullscreen');
   logo.style.display = 'block';
   welcomeMessage.style.display = 'block';
-  activitySection.style.display = 'flex';
+  activitySection.style.display = 'block';
   infoSection.style.display = 'block';
-  topics.style.display = 'block';
+  topics.style.display = 'flex';
+  document.querySelector('.navigation').style.display = 'flex';
+  chatHeaderText.textContent = 'Hare Krishna Devotes';
   notificationIcon.style.display = 'flex';
   historyIcon.style.display = 'none';
-
-  chatHeaderText.textContent = 'Sakha';
 }
 
 function enterFullscreenMode() {
   const chatContainer = document.getElementById('chatContainer');
   chatContainer.classList.add('fullscreen');
+  updateNavigationVisibility();
+}
+
+function toggleNotifications() {
+  const panel = document.getElementById('notificationPanel');
+  panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+}
+
+function toggleHistory() {
+  const panel = document.getElementById('historyPanel');
+  panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+}
+
+function updateNavigationVisibility() {
+  const navigation = document.querySelector('.navigation');
+  const chatContainer = document.getElementById('chatContainer');
+  if (chatContainer.classList.contains('fullscreen')) {
+    navigation.style.display = 'flex';
+  }
 }
 
 function scrollChatToBottom() {
@@ -441,20 +493,42 @@ function scrollChatToBottom() {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Reassign the original sendMessage function to ensure it scrolls chat to the bottom
-const originalSendMessage = sendMessage;
-sendMessage = function() {
-  originalSendMessage();
-  scrollChatToBottom();
-};
+function addToHistory(title, content) {
+  const historyPanel = document.getElementById('historyPanel');
+  const historyItem = document.createElement('div');
+  historyItem.className = 'history-item';
+  historyItem.innerHTML = `
+    <div class="history-item-title">${title}</div>
+    <div class="history-item-content">${content}</div>
+  `;
+  historyPanel.appendChild(historyItem);
+}
 
+// Event listeners
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+
+window.addEventListener('scroll', () => {
+  const particles = document.querySelectorAll('.particle');
+  const scrollPosition = window.pageYOffset;
+  particles.forEach((particle, index) => {
+    const speed = 0.5 + (index / particles.length) * 0.5;
+    particle.style.transform = `translateY(${scrollPosition * speed}px)`;
+  });
+});
+
+// Initialization
 typeWriter();
 createParticles();
-
+resetMessagesIfNeeded();
   </script>
 </body>
 </html>
 
 
 
-   
+
+                            
