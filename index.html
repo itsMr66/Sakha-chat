@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -167,60 +167,60 @@
 
   <script>
     const welcomeMessages = ["Find your inner peace", "Discover spiritual wisdom", "Embrace mindful living", "Navigate life's journey", "Cultivate inner harmony"];
-    let currentMessageIndex = 0;
-    let currentCharIndex = 0;
-    let isDeleting = false;
-    let typingSpeed = 100;
-    let apiRes=''; 
-  let prompt='';
-    function typeWriter() {
-      const welcomeMessage = document.getElementById('welcomeMessage');
-      const currentMessage = welcomeMessages[currentMessageIndex];
-      if (isDeleting) {
-        welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex - 1);
-        currentCharIndex--;
-      } else {
-        welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex + 1);
-        currentCharIndex++;
-      }
-      if (!isDeleting && currentCharIndex === currentMessage.length) {
-        isDeleting = true;
-        typingSpeed = 100;
-        setTimeout(() => {
-          isDeleting = false;
-          currentMessageIndex = (currentMessageIndex + 1) % welcomeMessages.length;
-          typingSpeed = 0;
-        }, 2000);
-      } else if (isDeleting && currentCharIndex === 0) {
-        isDeleting = false;
-      }
-      const randomSpeed = Math.random() * 50 + 50;
-      setTimeout(typeWriter, isDeleting ? typingSpeed : randomSpeed);
-    }
+let currentMessageIndex = 0;
+let currentCharIndex = 0;
+let isDeleting = false;
+let typingSpeed = 100;
+let apiRes = '';
+let prompt = '';
+let currentSession = [];
 
-    function createParticles() {
-      const particlesContainer = document.getElementById('particles');
-      const particleCount = 20;
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        particle.style.width = `${Math.random() * 10 + 5}px`;
-        particle.style.height = particle.style.width;
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 5}s`;
-        particlesContainer.appendChild(particle);
-      }
-    }
+function typeWriter() {
+  const welcomeMessage = document.getElementById('welcomeMessage');
+  const currentMessage = welcomeMessages[currentMessageIndex];
+  if (isDeleting) {
+    welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex - 1);
+    currentCharIndex--;
+  } else {
+    welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex + 1);
+    currentCharIndex++;
+  }
+  if (!isDeleting && currentCharIndex === currentMessage.length) {
+    isDeleting = true;
+    typingSpeed = 100;
+    setTimeout(() => {
+      isDeleting = false;
+      currentMessageIndex = (currentMessageIndex + 1) % welcomeMessages.length;
+      typingSpeed = 0;
+    }, 2000);
+  } else if (isDeleting && currentCharIndex === 0) {
+    isDeleting = false;
+  }
+  const randomSpeed = Math.random() * 50 + 50;
+  setTimeout(typeWriter, isDeleting ? typingSpeed : randomSpeed);
+}
 
-    function selectTopic(topic) {
-      const prompt = document.getElementById('userInput');
-      prompt.value = `Tell me about ${topic}`;
-      sendMessage();
-    
-    }
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 20;
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.classList.add('particle');
+    particle.style.width = `${Math.random() * 10 + 5}px`;
+    particle.style.height = particle.style.width;
+    particle.style.left = `${Math.random() * 100}%`;
+    particle.style.top = `${Math.random() * 100}%`;
+    particle.style.animationDelay = `${Math.random() * 5}s`;
+    particlesContainer.appendChild(particle);
+  }
+}
 
-    let currentSession = [];
+function selectTopic(topic) {
+  const prompt = document.getElementById('userInput');
+  prompt.value = `Tell me about ${topic}`;
+  sendMessage();
+}
+
 async function getChatResponse(prompt) {
   try {
     const response = await fetch('/api/chat', {
@@ -238,7 +238,6 @@ async function getChatResponse(prompt) {
       apiRes = "No valid response received.";
     }
 
-    // Call displayBotMessage here as soon as the response is received
     displayBotMessage(apiRes);
 
   } catch (error) {
@@ -250,7 +249,7 @@ async function getChatResponse(prompt) {
 function displayBotMessage(botResponse) {
   const chatMessages = document.getElementById('chatMessages');
   const typingIndicator = document.getElementById('typingIndicator');
-  
+
   typingIndicator.classList.remove('active');
   typingIndicator.style.animation = '';
 
@@ -284,8 +283,6 @@ function displayBotMessage(botResponse) {
 function sendMessage() {
   const userInput = document.getElementById('userInput');
   const chatMessages = document.getElementById('chatMessages');
-  const chatContainer = document.getElementById('chatContainer');
-  const appContainer = document.getElementById('appContainer');
   const typingIndicator = document.getElementById('typingIndicator');
   const topics = document.getElementById('topics');
   const chatHeaderText = document.getElementById('chatHeaderText');
@@ -360,152 +357,99 @@ function sendMessage() {
   }
 }
 
-// Reassign the original sendMessage function to ensure it scrolls chat to the bottom
-
-
-
-
-
 document.getElementById('userInput').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') {
     sendMessage();
   }
 });
-   function likeMessage(button) {
-      button.classList.toggle('active');
-      // Add like functionality
-    }
 
-    function dislikeMessage(button) {
-      button.classList.toggle('active');
-      // Add dislike functionality
-    }
+function likeMessage(button) {
+  button.classList.toggle('active');
+  // Add like functionality
+}
 
-    function copyMessage(button) {
-      const message = button.closest('.message').textContent;
-      navigator.clipboard.writeText(message).then(() => {
-        // Show a tooltip or notification that the message was copied
-      });
-    }
+function dislikeMessage(button) {
+  button.classList.toggle('active');
+  // Add dislike functionality
+}
 
-    function completeActivity(activity) {
-      if (activity === 'chanting') {
-        openChantingOverlay();
-      }
-      const card = document.getElementById(`${activity}Card`);
-      const progressCircle = card.querySelector('.progress-circle');
-      let progress = parseInt(progressCircle.getAttribute('data-progress'));
-      progress += 10;
-      if (progress > 100) progress = 100;
-      progressCircle.setAttribute('data-progress', progress);
-      progressCircle.style.background = `conic-gradient(var(--primary-color) ${progress * 3.6}deg, #ededed 0deg)`;
+function copyMessage(button) {
+  const message = button.closest('.message').textContent;
+  navigator.clipboard.writeText(message).then(() => {
+    // Show a tooltip or notification that the message was copied
+  });
+}
 
-      card.style.animation = 'pulse 0.5s';
-      setTimeout(() => {
-        card.style.animation = '';
-      }, 500);
-    }
+function completeActivity(activity) {
+  if (activity === 'chanting') {
+    openChantingOverlay();
+  }
+  const card = document.getElementById(`${activity}Card`);
+  const progressCircle = card.querySelector('.progress-circle');
+  let progress = parseInt(progressCircle.getAttribute('data-progress'));
+  progress += 10;
+  if (progress > 100) progress = 100;
+  progressCircle.setAttribute('data-progress', progress);
+  progressCircle.style.background = `conic-gradient(var(--primary-color) ${progress * 3.6}deg, #ededed 0deg)`;
 
-    function openChantingOverlay() {
-      const overlay = document.getElementById('chantingOverlay');
-      overlay.style.display = 'flex';
-    }
+  card.style.animation = 'pulse 0.5s';
+  setTimeout(() => {
+    card.style.animation = '';
+  }, 500);
+}
 
-    function closeChantingOverlay() {
-      const overlay = document.getElementById('chantingOverlay');
-      overlay.style.display = 'none';
-    }
+function openChantingOverlay() {
+  const overlay = document.getElementById('chantingOverlay');
+  overlay.style.display = 'flex';
+}
 
-    function goBack() {
-      const chatContainer = document.getElementById('chatContainer');
-      const logo = document.querySelector('.logo');
-      const welcomeMessage = document.querySelector('.welcome-message');
-      const activitySection = document.querySelector('.activity-section');
-      const infoSection = document.querySelector('.info-section');
-      const topics = document.getElementById('topics');
-      const chatHeaderText = document.getElementById('chatHeaderText');
-      const notificationIcon = document.querySelector('.notification-icon');
-      const historyIcon = document.querySelector('.history-icon');
+function closeChantingOverlay() {
+  const overlay = document.getElementById('chantingOverlay');
+  overlay.style.display = 'none';
+}
 
-      chatContainer.classList.remove('fullscreen');
-      logo.style.display = 'block';
-      welcomeMessage.style.display = 'block';
-      activitySection.style.display = 'block';
-      infoSection.style.display = 'block';
-      topics.style.display = 'flex';
-      document.querySelector('.navigation').style.display = 'flex';
-      chatHeaderText.text = 'Hare Krishna Devotes';
-      notificationIcon.style.display = 'flex';
-      historyIcon.style.display = 'none';
-    }
+function goBack() {
+  const chatContainer = document.getElementById('chatContainer');
+  const logo = document.querySelector('.logo');
+  const welcomeMessage = document.querySelector('.welcome-message');
+  const activitySection = document.querySelector('.activity-section');
+  const infoSection = document.querySelector('.info-section');
+  const topics = document.getElementById('topics');
+  const notificationIcon = document.querySelector('.notification-icon');
+  const historyIcon = document.querySelector('.history-icon');
+  const chatHeaderText = document.getElementById('chatHeaderText');
 
-    function enterFullscreenMode() {
-      const chatContainer = document.getElementById('chatContainer');
-      chatContainer.classList.add('fullscreen');
-      updateNavigationVisibility();
-    }
+  chatContainer.classList.remove('fullscreen');
+  logo.style.display = 'block';
+  welcomeMessage.style.display = 'block';
+  activitySection.style.display = 'flex';
+  infoSection.style.display = 'block';
+  topics.style.display = 'block';
+  notificationIcon.style.display = 'flex';
+  historyIcon.style.display = 'none';
 
-    function toggleNotifications() {
-      const panel = document.getElementById('notificationPanel');
-      panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
-    }
+  chatHeaderText.textContent = 'Sakha';
+}
 
-    function toggleHistory() {
-      const panel = document.getElementById('historyPanel');
-      panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
-    }
+function enterFullscreenMode() {
+  const chatContainer = document.getElementById('chatContainer');
+  chatContainer.classList.add('fullscreen');
+}
 
-    typeWriter();
-    createParticles();
+function scrollChatToBottom() {
+  const chatMessages = document.getElementById('chatMessages');
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-    document.getElementById('userInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
-    });
+// Reassign the original sendMessage function to ensure it scrolls chat to the bottom
+const originalSendMessage = sendMessage;
+sendMessage = function() {
+  originalSendMessage();
+  scrollChatToBottom();
+};
 
-    
-
-    window.addEventListener('scroll', () => {
-      const particles = document.querySelectorAll('.particle');
-      const scrollPosition = window.pageYOffset;
-      particles.forEach((particle, index) => {
-        const speed = 0.5 + (index / particles.length) * 0.5;
-        particle.style.transform = `translateY(${scrollPosition * speed}px)`;
-      });
-    });
-
-    const originalHeight = window.innerHeight;
-
-    function updateNavigationVisibility() {
-      const navigation = document.querySelector('.navigation');
-      const chatContainer = document.getElementById('chatContainer');
-      if (chatContainer.classList.contains('fullscreen')) {
-        navigation.style.display = 'flex';
-      }
-    }
-
-    function scrollChatToBottom() {
-      const chatMessages = document.getElementById('chatMessages');
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    const originalSendMessage = sendMessage;
-    sendMessage = function() {
-      originalSendMessage();
-      scrollChatToBottom();
-    };
-
-    function addToHistory(title, content) {
-      const historyPanel = document.getElementById('historyPanel');
-      const historyItem = document.createElement('div');
-      historyItem.className = 'history-item';
-      historyItem.innerHTML = `
-    <div class="history-item-title">${title}</div>
-    <div class="history-item-content">${content}</div>
-  `; 
-      historyPanel.appendChild(historyItem);
-    }
+typeWriter();
+createParticles();
 
   </script>
 </body>
@@ -513,3 +457,4 @@ document.getElementById('userInput').addEventListener('keypress', function(e) {
 
 
 
+   
