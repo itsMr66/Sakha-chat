@@ -20,7 +20,7 @@
     <div class="logo"><img src="https://www.sakha.chat/logo.png" alt="Sakha Logo"></div>
     <div class="welcome-message" id="welcomeMessage"></div>
     <div class="chat-container" id="chatContainer">
-      <div class="chat-header"><button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i></button><span id="chatHeaderText">Hare Krishna Devotes</span></div>
+      <div class="chat-header"><button class="back-button" onclick="goBack()"><i class="fas fa-arrow-left"></i></button><span id="chatHeaderText">Hare Krishna Devotee</span></div>
       <div class="chat-messages" id="chatMessages">
         <div class="message bot-message">Namaste! I'm Sakha, your spiritual friend. How can I guide you today?<div class="message-actions"><button class="message-action" onclick="likeMessage(this)"><i class="fas fa-thumbs-up"></i></button><button class="message-action" onclick="dislikeMessage(this)"><i class="fas fa-thumbs-down"></i></button><button class="message-action" onclick="copyMessage(this)"><i class="fas fa-copy"></i></button></div>
         </div>
@@ -85,10 +85,14 @@
         </div>
       </div>
     </div>
-  </div><nav class="navigation"><a href="https://home.sakha.chat" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span></a><a href="https://vedic.sakha.chat" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://home.sakha.chat/mala" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a><a href="https://gita.sakha.chat" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span></a>
-  <a href="https://game.sakha.chat" class="nav-item"><i class="fas fa-gamepad"></i><span>Game</span></a>
-  </nav>
-  
+  </div>
+  <nav class="navigation">
+      <a href="#" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span>
+      </a>
+    <a href="https://vedic.sakha.chat" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://home.sakha.chat/mala.html" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a>
+  <a href="https://gita.sakha.chat" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span>
+  </a>
+  <a href="https://game.sakha.chat" class="nav-item"><i class="fas fa-gamepad"></i><span>Game</span></a></nav>
   <div class="notification-icon" onclick="toggleNotifications()" data-count="3"><i class="fas fa-bell"></i></div>
   <div class="notification-panel" id="notificationPanel">
     <div class="notification-panel-header">
@@ -223,7 +227,7 @@
     let currentSession = [];
 async function getChatResponse(prompt) {
   try {
-    const response = await fetch('/api/chat', {
+    const response = await fetch('https://home.sakha.chat/api/chat', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -465,7 +469,86 @@ document.getElementById('userInput').addEventListener('keypress', function(e) {
   `; 
       historyPanel.appendChild(historyItem);
     }
+// Limit user to 5 questions per 3-hour interval
+const MESSAGE_LIMIT = 5;
+const INTERVAL_HOURS = 3;
+const LIMIT_MESSAGE = "You've reached your usage limit for Sakha Chat. Currently, the chat is restricted to 5 messages every 3 hours. We are working on increasing this limit. Please check back later for additional access. Hare Krishna.";
 
+function getGlobalTime() {
+  return new Date().getTime();
+}
+
+function getLimitData() {
+  return JSON.parse(localStorage.getItem('limitData')) || { count: 0, lastReset: getGlobalTime() };
+}
+
+function saveLimitData(data) {
+  localStorage.setItem('limitData', JSON.stringify(data));
+}
+
+function checkLimit() {
+  const data = getLimitData();
+  const now = getGlobalTime();
+  const intervalMillis = INTERVAL_HOURS * 60 * 60 * 1000;
+
+  if (now - data.lastReset >= intervalMillis) {
+    data.count = 0;
+    data.lastReset = now;
+    saveLimitData(data);
+  }
+
+  return data.count < MESSAGE_LIMIT;
+}
+
+function incrementLimit() {
+  const data = getLimitData();
+  data.count += 1;
+  saveLimitData(data);
+}
+
+function sendLimitMessage() {
+  const chatMessages = document.getElementById('chatMessages');
+  const botMessage = document.createElement('div');
+  botMessage.className = 'message bot-message';
+  botMessage.textContent = LIMIT_MESSAGE;
+  chatMessages.appendChild(botMessage);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function sendMessage() {
+  const userInput = document.getElementById('userInput');
+  const chatMessages = document.getElementById('chatMessages');
+  const typingIndicator = document.getElementById('typingIndicator');
+
+  if (userInput.value.trim() !== '') {
+    if (checkLimit()) {
+      incrementLimit();
+
+      const prompt = userInput.value;
+      const userMessage = document.createElement('div');
+      userMessage.className = 'message user-message';
+      userMessage.textContent = prompt;
+      chatMessages.appendChild(userMessage);
+
+      currentSession.push({ role: 'user', content: prompt });
+
+      typingIndicator.classList.add('active');
+      typingIndicator.style.animation = 'pulse 1s infinite';
+
+      userInput.value = '';
+
+      getChatResponse(prompt);
+    } else {
+      sendLimitMessage();
+    }
+  }
+}
+
+document.getElementById('userInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
   </script>
 </body>
 </html>
