@@ -351,7 +351,7 @@ function sendMessage() {
   if (checkQuestionLimit()) {
     const limitMessage = document.createElement('div');
     limitMessage.className = 'message bot-message';
-    limitMessage.textContent = "You've reached your usage limit for Sakha Chat. For the time being, it's restricted to 5 messages per day. We are working on increasing this limit. Please check back 3hrs later for additional access. Hare Krishna.";
+    limitMessage.textContent = "You've reached your usage limit for Sakha Chat. For the time being, it's restricted to 5 messages per day. We are working on increasing this limit. Please check back later for additional access. Hare Krishna.";
     chatMessages.appendChild(limitMessage);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return;
