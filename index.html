@@ -280,7 +280,6 @@ function displayBotMessage(botResponse) {
 
   currentSession.push({ role: 'assistant', content: botResponse });
 }
-
 function isLocalStorageAvailable() {
   try {
     const testKey = 'test';
@@ -312,6 +311,14 @@ if (isLocalStorageAvailable()) {
       localStorage.setItem('lastQuestionTime', value);
     },
   };
+
+  // Initialize values if they do not exist
+  if (!localStorage.getItem('lastQuestionTime')) {
+    storage.lastQuestionTime = 0;
+  }
+  if (!localStorage.getItem('questionCount')) {
+    storage.questionCount = 0;
+  }
 }
 
 function getCurrentTime() {
