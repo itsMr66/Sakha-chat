@@ -86,8 +86,7 @@
       </div>
     </div>
   </div><nav class="navigation"><a href="https://home.sakha.chat" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span></a><a href="https://vedic.sakha.chat" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://home.sakha.chat/mala" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a><a href="https://gita.sakha.chat" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span></a>
-  <a href="https://game.sakha.chat" class="nav-item"><i class="fas fa-gamepad"></i><span>Game</span></a>
-  </nav>
+  
   
   <div class="notification-icon" onclick="toggleNotifications()" data-count="3"><i class="fas fa-bell"></i></div>
   <div class="notification-panel" id="notificationPanel">
@@ -354,6 +353,7 @@ function sendMessage() {
   const topics = document.getElementById('topics');
   const notificationIcon = document.querySelector('.notification-icon');
   const historyIcon = document.querySelector('.history-icon');
+
 
   if (checkQuestionLimit()) {
     enterFullscreenMode();
