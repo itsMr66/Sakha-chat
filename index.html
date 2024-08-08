@@ -1,4 +1,4 @@
-
+ 
  <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -356,9 +356,16 @@ function sendMessage() {
   const historyIcon = document.querySelector('.history-icon');
 
   if (checkQuestionLimit()) {
+    enterFullscreenMode();
     const limitMessage = document.createElement('div');
     limitMessage.className = 'message bot-message';
-    limitMessage.textContent = "You've reached the daily limit for Sakha Chat, which is currently set to 5 messages. This restriction will be refreshed every 3 hours. We are working on increasing this limit, so please check back later for additional access. Hare Krishna.";
+    limitMessage.innerHTML = `
+      You've reached the daily limit for Sakha Chat, which is currently set to 5 messages. We are working on increasing this limit, so please check back later. Hare Krishna.
+      <br><br>
+      Sakha is an open-source project that requires funding to operate. You can contribute by clicking the button below:
+      <br><br>
+      <button onclick="window.location.href='https://rzp.io/l/uvl0zLm'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 5px;">Contribute</button>
+    `;
     chatMessages.appendChild(limitMessage);
     chatMessages.scrollTop = chatMessages.scrollHeight;
     return;
@@ -460,4 +467,5 @@ chatContainer.classList.add('fullscreen');
 
 
 
-                                                                                 
+
+       
