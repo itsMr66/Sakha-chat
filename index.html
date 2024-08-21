@@ -868,14 +868,9 @@
         </div>
       </div>
     </div>
-  </div>
-  <nav class="navigation">
-      <a href="#" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span>
-      </a>
-    <a href="#" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://sakha-five.vercel.app/mala.html" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a>
-  <a href="#" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span>
-  </a>
-  <a href="#" class="nav-item"><i class="fas fa-gamepad"></i><span>Game</span></a></nav>
+  </div><nav class="navigation"><a href="https://home.sakha.chat" class="nav-item nav-active"><i class="fas fa-home"></i><span>Home</span></a><a href="https://vedic.sakha.chat" class="nav-item"><i class="fas fa-book"></i><span>Books</span></a><a href="https://home.sakha.chat/mala" class="nav-item"><i class="fas fa-om"></i><span>Chanting</span></a><a href="https://gita.sakha.chat" class="nav-item"><i class="fas fa-leaf"></i><span>Remedies</span></a>
+
+    <a href="https://rzp.io/l/sakha" class="nav-item"><i class="fas fa-hand-holding-heart"></i><span>contribute</span></a></nav>
   <div class="notification-icon" onclick="toggleNotifications()" data-count="3"><i class="fas fa-bell"></i></div>
   <div class="notification-panel" id="notificationPanel">
     <div class="notification-panel-header">
@@ -1086,12 +1081,18 @@
             });
 
             if (messageCount >= maxMessages) {
-                const endMessage = document.createElement('div');
-                endMessage.className = 'message bot-message';
-                endMessage.textContent = "This is the end of our chat session. Thank you for talking to me!";
-                chatMessages.appendChild(endMessage);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+    const endMessage = document.createElement('div');
+    endMessage.className = 'message bot-message';
+    endMessage.innerHTML = `
+        You've reached the daily limit for Sakha Chat, which is currently set to 5 messages. We are working on increasing this limit, so please check back later. Hare Krishna.
+        <br><br>
+        Sakha is an open-source project that requires funding to operate. You can contribute by clicking the button below:
+        <br><br>
+        <button onclick="window.location.href='https://rzp.io/l/uvl0zLm'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 5px;">Contribute</button>
+    `;
+    chatMessages.appendChild(endMessage);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
         }
     }
 
