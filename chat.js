@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
     const response = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model: 'ft:gpt-3.5-turbo-1106:personal::8Ub6IuEP', // Adjusted model
+        model: 'gpt-3.5-turbo-1106', // Adjusted model
         messages: [
           { role: 'system', content: 'You are a spiritual assistant.' },
           ...chatHistory, // Include the chat history for context
