@@ -1,5 +1,4 @@
- 
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -13,7 +12,6 @@
  
 </head>
 <body>
-
 
 <div class="spiritual-particles" id="particles"></div>
   <div class="container" id="appContainer">
@@ -159,313 +157,72 @@
       <div class="history-item-content">Key teachings from the Bhagavad Gita and their modern applications.</div>
     </div>
   </div>
-  <div class="chanting-overlay" id="chantingOverlay">
-    <h1>Hare Krishna</h1><button class="close-overlay" onclick="closeChantingOverlay()"><i class="fas fa-times"></i></button>
-         </div>
- 
-
   <script>
-    const welcomeMessages = ["Find your inner peace", "Discover spiritual wisdom", "Embrace mindful living", "Navigate life's journey", "Cultivate inner harmony"];
-    let currentMessageIndex = 0;
-    let currentCharIndex = 0;
-    let isDeleting = false;
-    let typingSpeed = 100;
-    let apiRes=''; 
-  let prompt='';
-    function typeWriter() {
-      const welcomeMessage = document.getElementById('welcomeMessage');
-      const currentMessage = welcomeMessages[currentMessageIndex];
-      if (isDeleting) {
-        welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex - 1);
-        currentCharIndex--;
-      } else {
-        welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex + 1);
-        currentCharIndex++;
-      }
-      if (!isDeleting && currentCharIndex === currentMessage.length) {
-        isDeleting = true;
-        typingSpeed = 100;
-        setTimeout(() => {
-          isDeleting = false;
-          currentMessageIndex = (currentMessageIndex + 1) % welcomeMessages.length;
-          typingSpeed = 0;
-        }, 2000);
-      } else if (isDeleting && currentCharIndex === 0) {
-        isDeleting = false;
-      }
-      const randomSpeed = Math.random() * 50 + 50;
-      setTimeout(typeWriter, isDeleting ? typingSpeed : randomSpeed);
+    function toggleNotifications() {
+      const panel = document.getElementById('notificationPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
     }
 
-    function createParticles() {
-      const particlesContainer = document.getElementById('particles');
-      const particleCount = 20;
-      for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.classList.add('particle');
-        particle.style.width = `${Math.random() * 10 + 5}px`;
-        particle.style.height = particle.style.width;
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.animationDelay = `${Math.random() * 5}s`;
-        particlesContainer.appendChild(particle);
-      }
+    function toggleHistory() {
+      const panel = document.getElementById('historyPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function goBack() {
+      // Simulate going back to a previous screen
+      alert('Going back to the previous screen.');
+    }
+
+    function sendMessage() {
+      const userInput = document.getElementById('userInput');
+      const message = userInput.value.trim();
+      if (message === '') return;
+
+      const chatMessages = document.getElementById('chatMessages');
+      const userMessageDiv = document.createElement('div');
+      userMessageDiv.classList.add('message', 'user-message');
+      userMessageDiv.textContent = message;
+      chatMessages.appendChild(userMessageDiv);
+
+      // Scroll to the bottom of the chat container
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      userInput.value = '';
+
+      // Simulate bot response
+      setTimeout(() => {
+        const botMessageDiv = document.createElement('div');
+        botMessageDiv.classList.add('message', 'bot-message');
+        botMessageDiv.textContent = 'Thank you for your message. I will get back to you shortly.';
+        chatMessages.appendChild(botMessageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 1000);
     }
 
     function selectTopic(topic) {
-      const prompt = document.getElementById('userInput');
-      prompt.value = `Tell me about ${topic}`;
-      sendMessage();
-    
-    }
-
-    let currentSession = [];
-async function getChatResponse(prompt) {
-  try {
-    const response = await fetch('/api/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ prompt: prompt })
-    });
-    const data = await response.json();
-
-    if (data.choices && data.choices[0] && data.choices[0].message) {
-      apiRes = data.choices[0].message.content;
-    } else {
-      apiRes = "No valid response received.";
-    }
-
-    // Call displayBotMessage here as soon as the response is received
-    displayBotMessage(apiRes);
-
-  } catch (error) {
-    apiRes = `Error: ${error.message}`;
-    displayBotMessage(apiRes); // Display error message
-  }
-}
-
-function displayBotMessage(botResponse) {
-  const chatMessages = document.getElementById('chatMessages');
-  const typingIndicator = document.getElementById('typingIndicator');
-  
-  typingIndicator.classList.remove('active');
-  typingIndicator.style.animation = '';
-
-  const botMessage = document.createElement('div');
-  botMessage.className = 'message bot-message';
-  chatMessages.appendChild(botMessage);
-
-  const words = botResponse.split(' ');
-  words.forEach((word, index) => {
-    const span = document.createElement('span');
-    span.className = 'word';
-    span.textContent = word + ' ';
-    span.style.animationDelay = `${index * 0.1}s`;
-    botMessage.appendChild(span);
-  });
-
-  const messageActions = document.createElement('div');
-  messageActions.className = 'message-actions';
-  messageActions.innerHTML = `
-    <button class="message-action" onclick="likeMessage(this)"><i class="fas fa-thumbs-up"></i></button>
-    <button class="message-action" onclick="dislikeMessage(this)"><i class="fas fa-thumbs-down"></i></button>
-    <button class="message-action" onclick="copyMessage(this)"><i class="fas fa-copy"></i></button>
-  `;
-  botMessage.appendChild(messageActions);
-
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-
-  currentSession.push({ role: 'assistant', content: botResponse });
-}
-function isLocalStorageAvailable() {
-  try {
-    const testKey = 'test';
-    localStorage.setItem(testKey, testKey);
-    localStorage.removeItem(testKey);
-    return true;
-  } catch (error) {
-    return false;
-  }
-}
-
-let storage = {
-  questionCount: 0,
-  lastQuestionTime: 0,
-};
-
-if (isLocalStorageAvailable()) {
-  storage = {
-    get questionCount() {
-      return parseInt(localStorage.getItem('questionCount')) || 0;
-    },
-    set questionCount(value) {
-      localStorage.setItem('questionCount', value);
-    },
-    get lastQuestionTime() {
-      return parseInt(localStorage.getItem('lastQuestionTime')) || 0;
-    },
-    set lastQuestionTime(value) {
-      localStorage.setItem('lastQuestionTime', value);
-    },
-  };
-
-  // Initialize values if they do not exist
-  if (!localStorage.getItem('lastQuestionTime')) {
-    storage.lastQuestionTime = 0;
-  }
-  if (!localStorage.getItem('questionCount')) {
-    storage.questionCount = 0;
-  }
-}
-
-function getCurrentTime() {
-  return new Date().getTime();
-}
-
-function updateStorage(questionCount, timestamp) {
-  storage.questionCount = questionCount;
-  storage.lastQuestionTime = timestamp;
-}
-
-function checkQuestionLimit() {
-  const currentTime = getCurrentTime();
-
-  if (currentTime - storage.lastQuestionTime > 3 * 60 * 60 * 1000) {
-    storage.questionCount = 0;
-  }
-
-  if (storage.questionCount >= 5) {
-    return true;
-  }
-
-  storage.questionCount += 1;
-  storage.lastQuestionTime = currentTime;
-  return false;
-}
-
-function sendMessage() {
-  const userInput = document.getElementById('userInput');
-  const chatMessages = document.getElementById('chatMessages');
-  const chatHeaderText = document.getElementById('chatHeaderText');
-  const typingIndicator = document.getElementById('typingIndicator');
-  const topics = document.getElementById('topics');
-  const notificationIcon = document.querySelector('.notification-icon');
-  const historyIcon = document.querySelector('.history-icon');
-
-
-  if (checkQuestionLimit()) {
-    enterFullscreenMode();
-    const limitMessage = document.createElement('div');
-    limitMessage.className = 'message bot-message';
-    limitMessage.innerHTML = `
-      You've reached the daily limit for Sakha Chat, which is currently set to 5 messages. We are working on increasing this limit, so please check back later. Hare Krishna.
-      <br><br>
-      Sakha is an open-source project that requires funding to operate. You can contribute by clicking the button below:
-      <br><br>
-      <button onclick="window.location.href='https://rzp.io/l/uvl0zLm'" style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; cursor: pointer; border-radius: 5px;">Contribute</button>
-    `;
-    chatMessages.appendChild(limitMessage);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    return;
-  }
-
-  if (userInput.value.trim() !== '') {
-    const prompt = userInput.value; // Store the prompt before clearing the input
-
-    enterFullscreenMode();
-
-    document.querySelector('.logo').style.display = 'none';
-    document.querySelector('.welcome-message').style.display = 'none';
-    document.querySelector('.activity-section').style.display = 'none';
-    document.querySelector('.info-section').style.display = 'none';
-    topics.style.display = 'none';
-    notificationIcon.style.display = 'none';
-    historyIcon.style.display = 'flex';
-
-    chatHeaderText.textContent = 'Sakha';
-
-    const userMessage = document.createElement('div');
-    userMessage.className = 'message user-message';
-    userMessage.textContent = prompt; // Use the stored prompt value
-    chatMessages.appendChild(userMessage);
-
-    currentSession.push({ role: 'user', content: prompt });
-
-    typingIndicator.classList.add('active');
-    typingIndicator.style.animation = 'pulse 1s infinite';
-
-    // Clear the input field
-    userInput.value = '';
-
-    // Call getChatResponse to get and display the bot's response
-    getChatResponse(prompt);
-  }
-}
-
-document.getElementById('userInput').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
-});
-    function enterFullscreenMode() {
-      const chatContainer = document.getElementById('chatContainer');
-chatContainer.classList.add('fullscreen');
-      updateNavigationVisibility();
-    }
-    window.addEventListener('scroll', () => {
-      const particles = document.querySelectorAll('.particle');
-      const scrollPosition = window.pageYOffset;
-      particles.forEach((particle, index) => {
-        const speed = 0.5 + (index / particles.length) * 0.5;
-        particle.style.transform = `translateY(${scrollPosition * speed}px)`;
-      });
-    });
-
-    const originalHeight = window.innerHeight;
-
-    function updateNavigationVisibility() {
-      const navigation = document.querySelector('.navigation');
-      const chatContainer = document.getElementById('chatContainer');
-      if (chatContainer.classList.contains('fullscreen')) {
-        navigation.style.display = 'flex';
-      }
-    }
-
-    function scrollChatToBottom() {
       const chatMessages = document.getElementById('chatMessages');
+      const botMessageDiv = document.createElement('div');
+      botMessageDiv.classList.add('message', 'bot-message');
+      botMessageDiv.textContent = `You have selected the topic: ${topic}`;
+      chatMessages.appendChild(botMessageDiv);
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    const originalSendMessage = sendMessage;
-    sendMessage = function() {
-      originalSendMessage();
-      scrollChatToBottom();
-    };
-
-    function addToHistory(title, content) {
-      const historyPanel = document.getElementById('historyPanel');
-      const historyItem = document.createElement('div');
-      historyItem.className = 'history-item';
-      historyItem.innerHTML = `
-    <div class="history-item-title">${title}</div>
-    <div class="history-item-content">${content}</div>
-  `; 
-      historyPanel.appendChild(historyItem);
+    function likeMessage(button) {
+      alert('You liked the message.');
     }
 
+    function dislikeMessage(button) {
+      alert('You disliked the message.');
+    }
+
+    function copyMessage(button) {
+      alert('Message copied to clipboard.');
+    }
+
+    function completeActivity(activity) {
+      alert(`Activity '${activity}' marked as complete.`);
+    }
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-       
