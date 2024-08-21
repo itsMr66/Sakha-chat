@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
         model: 'gpt-3.5-turbo-1106', // Adjusted model
         messages: [
           { role: 'system', content: 'You are a spiritual assistant.' },
-          ...chatHistory, // Include the chat history for context
+          // Include the chat history for context
           { role: 'user', content: prompt } // The latest user message
         ],
         max_tokens: 300,
