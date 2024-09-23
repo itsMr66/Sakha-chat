@@ -1,4 +1,4 @@
-
+ 
 <html>
 
 <head>
@@ -956,30 +956,36 @@
     const maxMessages = 5; // Limit the conversation to 5 messages
 
     function typeWriter() {
-        const welcomeMessage = document.getElementById('welcomeMessage');
-        const currentMessage = welcomeMessages[currentMessageIndex];
-        if (isDeleting) {
-            welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex - 1);
-            currentCharIndex--;
-        } else {
-            welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex + 1);
-            currentCharIndex++;
-        }
-        if (!isDeleting && currentCharIndex === currentMessage.length) {
-            isDeleting = true;
-            typingSpeed = 100;
-            setTimeout(() => {
-                isDeleting = false;
-                currentMessageIndex = (currentMessageIndex + 1) % welcomeMessages.length;
-                typingSpeed = 0;
-            }, 2000);
-        } else if (isDeleting && currentCharIndex === 0) {
-            isDeleting = false;
-        }
-        const randomSpeed = Math.random() * 50 + 50;
-        setTimeout(typeWriter, isDeleting ? typingSpeed : randomSpeed);
+      const welcomeMessage = document.getElementById('welcomeMessage');
+      const currentMessage = welcomeMessages[currentMessageIndex];
+    
+      if (isDeleting) {
+        welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex - 1);
+        currentCharIndex--;
+      } else {
+        welcomeMessage.textContent = currentMessage.substring(0, currentCharIndex + 1);
+        currentCharIndex++;
+      }
+    
+      if (!isDeleting && currentCharIndex === currentMessage.length) {
+        isDeleting = true;
+        typingSpeed = 50;
+    
+        // Add a 2-second pause before starting to delete
+        setTimeout(() => {
+          isDeleting = true;
+          setTimeout(typeWriter, typingSpeed);
+        }, 2000);
+        return;
+      } else if (isDeleting && currentCharIndex === 0) {
+        isDeleting = false;
+        currentMessageIndex = (currentMessageIndex + 1) % welcomeMessages.length;
+        typingSpeed = 0;
+      }
+    
+      const randomSpeed = Math.random() * 50 + 50;
+      setTimeout(typeWriter, isDeleting ? typingSpeed : randomSpeed);
     }
-
     function createParticles() {
         const particlesContainer = document.getElementById('particles');
         const particleCount = 20;
